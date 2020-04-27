@@ -6,7 +6,7 @@
 #include <readline/history.h>
 
 #define PARSERS \
-    X(Lambda, "lambda", "'\\\\'") \
+    X(Lambda, "lambda", "'\\\\' | \"λ\"") \
     X(Dot, "dot", "'.'") \
     X(Identifier, "id", "/[a-z]/") \
     X(Term, "term", "<app> | <lambda> <id> <dot> <term>") \
