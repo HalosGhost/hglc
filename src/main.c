@@ -12,7 +12,7 @@
     X(Term, "term", "<app> | <lambda> <id> <dot> <term>") \
     X(Application, "app", "<app> <atom> | <atom>") \
     X(Atom, "atom", "'(' <term> ')' | <id>") \
-    X(Program, "program", "/^/ <term>+ /$/")
+    X(Program, "program", "/^/ <term> /$/")
 
 #define X(id, name, def) + 1
 static const int PARSER_COUNT = PARSERS;
