@@ -19,9 +19,11 @@ main (void) {
         CHURCH_NOTATION
     #undef X
     #define X(id, name, def) , id
-        CHURCH_NOTATION,
+        CHURCH_NOTATION
     #undef X
-        NULL
+    #ifndef NDEBUG
+        , NULL
+    #endif
     );
 
     if ( failed_to_generate ) {
@@ -40,9 +42,11 @@ main (void) {
         DE_BRUIJN_INDEX_NOTATION
     #undef X
     #define X(id, name, def) , id
-        DE_BRUIJN_INDEX_NOTATION,
+        DE_BRUIJN_INDEX_NOTATION
     #undef X
-        NULL
+    #ifndef NDEBUG
+        , NULL
+    #endif
     );
 
     if ( failed_to_generate ) {
