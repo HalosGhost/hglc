@@ -62,6 +62,7 @@ main (void) {
         add_history(input);
 
         if ( pcq_parse("<stdin>", input, CHURCH_Program, &r) ) {
+            de_bruijn(r.output);
             pcq_ast_print(r.output);
             pcq_ast_delete(r.output);
         } else {
@@ -81,3 +82,31 @@ main (void) {
 
     return EXIT_SUCCESS;
 }
+
+void
+de_bruijn (pcq_ast_t * church) {
+
+    for ( signed i = 0; i < church->children_num; ++i ) {
+        if ( strstr(church->children[i]->tag, "dot") ) {
+            ast_remove_child(church, i--);
+        } else {
+            de_bruijn(church->children[i]);
+        }
+    }
+}
+
+void
+ast_remove_child (pcq_ast_t * root, signed index) {
+
+    if ( !root || (index + 1) >= root->children_num ) { return; }
+
+    pcq_ast_delete(root->children[index]);
+    root->children[index] = NULL;
+
+    for ( signed i = index + 1; i < root->children_num; ++i ) {
+        root->children[i - 1] = root->children[i];
+    }
+
+    --root->children_num;
+}
+
