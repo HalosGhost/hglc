@@ -10,6 +10,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+#include "stack.h"
+
 #define DE_BRUIJN_INDEX_NOTATION \
     X(DE_BRUIJN_Lambda, "lambda", "'\\\\' | \"λ\"") \
     X(DE_BRUIJN_Identifier, "id", "/[0-9]+/") \
@@ -40,8 +42,10 @@ static const int PARSER_COUNT =
 ;
 #undef X
 
+static char free_variables_in_scope [25];
+
 void
-de_bruijn (pcq_ast_t *);
+de_bruijn (pcq_ast_t *, struct stack *);
 
 void
 ast_remove_child (pcq_ast_t *, signed);

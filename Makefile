@@ -2,7 +2,7 @@ PROGNM = hglc
 
 CC ?= gcc
 CFLAGS ?= -g -ggdb -O3 -fPIE -flto -fstack-protector-strong --param=ssp-buffer-size=1 -Wno-reserved-id-macro -Wall -Wextra -Wpedantic -Werror -std=gnu18 -fsanitize=undefined
-LDFLAGS ?= `pkg-config --libs-only-l readline pcq`
+LDFLAGS ?= `pkg-config --libs-only-l readline pcq` -lm
 VER = r`git rev-list --count HEAD`.`git rev-parse --short HEAD`
 FMFLAGS = -wp -then -wp -wp-rte
 
