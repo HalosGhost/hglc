@@ -66,12 +66,15 @@ main (void) {
         add_history(input);
 
         if ( pcq_parse("<stdin>", input, CHURCH_Program, &r) ) {
+            PRINT_CHURCH(r.output);
+
             STACK_INIT(bound_variables);
             de_bruijn(r.output, bound_variables);
             stack_free(bound_variables);
             memset(free_variables_in_scope, 0, sizeof free_variables_in_scope);
 
-            pcq_ast_print(r.output);
+            PRINT_DE_BRUIJN(r.output);
+
             pcq_ast_delete(r.output);
         } else {
             pcq_err_print(r.error);
@@ -118,7 +121,7 @@ de_bruijn (pcq_ast_t * church, struct stack * bound) {
                 long idx = stack_search(bound, binder);
                 if ( idx == -1 ) {
                     long j;
-                    for ( j = 0; j < 25; ++j ) {
+                    for ( j = 0; j < MAX_FREE_VARIABLE_COUNT; ++j ) {
                         if ( !free_variables_in_scope[j] ) {
                             free_variables_in_scope[j] = binder;
                             break;
@@ -133,9 +136,9 @@ de_bruijn (pcq_ast_t * church, struct stack * bound) {
                 }
 
                 size_t len = !idx ? 1 : (size_t )log10(idx) + 1;
-                char * n = realloc(child->contents, len);
+                char * n = realloc(child->contents, len + 1);
                 child->contents = n;
-                sprintf(child->contents, "%*ld", (signed )len, idx);
+                snprintf(child->contents, len + 1, "%ld", idx);
             }
         }
 
@@ -144,6 +147,50 @@ de_bruijn (pcq_ast_t * church, struct stack * bound) {
 
     if ( added_binder ) {
         free(stack_pop(&bound));
+    }
+}
+
+void
+print_ast_contents (pcq_ast_t * ast, enum Notation notation) {
+
+    for ( signed i = 0; i < ast->children_num; ++i ) {
+        pcq_ast_t * child = ast->children[i];
+
+        if ( strstr(child->tag, "empty") ) {
+            continue;
+        }
+
+        if ( notation == DE_BRUIJN ) {
+            if ( !strncmp(child->tag, "dot", 3) ) {
+                continue;
+            }
+
+            if ( !strncmp(child->tag, "atom|id", 7) ) {
+                printf("%s", child->contents);
+                continue;
+            }
+        } else {
+            if ( strstr(child->tag, "id") || !strncmp(child->tag, "dot", 3) ) {
+                printf("%s", child->contents);
+                continue;
+            }
+        }
+
+        if ( !strncmp(child->tag, "lambda", 6) ) {
+            printf("λ");
+            continue;
+        }
+
+        if ( strstr(child->tag, "char") ) {
+            printf("%s", child->contents);
+            continue;
+        }
+
+        if ( strstr(child->tag, "appL") ) {
+            putchar(' ');
+        }
+
+        print_ast_contents(child, notation);
     }
 }
 

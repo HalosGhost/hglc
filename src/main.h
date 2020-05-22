@@ -42,10 +42,29 @@ static const int PARSER_COUNT =
 ;
 #undef X
 
-static char free_variables_in_scope [25];
+#define MAX_FREE_VARIABLE_COUNT 25
+static char free_variables_in_scope [MAX_FREE_VARIABLE_COUNT];
 
 void
 de_bruijn (pcq_ast_t *, struct stack *);
+
+enum Notation {
+    CHURCH,
+    DE_BRUIJN
+};
+
+void
+print_ast_contents (pcq_ast_t *, enum Notation);
+
+#define PRINT_CHURCH(x) do { \
+    print_ast_contents((x), CHURCH); \
+    putchar('\n'); \
+} while ( false )
+
+#define PRINT_DE_BRUIJN(x) do { \
+    print_ast_contents((x), DE_BRUIJN); \
+    putchar('\n'); \
+} while ( false )
 
 void
 ast_remove_child (pcq_ast_t *, signed);
