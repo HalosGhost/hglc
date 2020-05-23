@@ -65,6 +65,23 @@ stack_search (struct stack * stk, signed value) {
     return index - 1;
 }
 
+signed
+stack_peak (struct stack * stk, long idx) {
+
+    if ( (size_t )idx > stack_size(stk) ) {
+        return 0;
+    }
+
+    long index = 0;
+    for ( struct stack * ptr = stk; ptr; ptr = ptr->next ) {
+        if ( index++ == idx ) {
+            return ptr->value;
+        }
+    }
+
+    return 0;
+}
+
 void
 stack_print (struct stack * stk) {
 

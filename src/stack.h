@@ -29,8 +29,11 @@ stack_push (struct stack **, struct stack);
 
 #define STACK_PUSH(stk, val) stack_push(&(stk), (struct stack){ .value = (val) })
 
-long
+signed long
 stack_search (struct stack *, signed);
+
+signed
+stack_peak (struct stack *, signed long);
 
 void
 stack_print (struct stack *);
