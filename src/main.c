@@ -66,15 +66,16 @@ main (void) {
         add_history(input);
 
         if ( pcq_parse("<stdin>", input, CHURCH_Program, &r) ) {
-            PRINT_CHURCH(r.output);
-
             STACK_INIT(bound_variables);
             de_bruijn(r.output, bound_variables);
             stack_free(bound_variables);
             memset(free_variables_in_scope, 0, sizeof free_variables_in_scope);
 
-            PRINT_DE_BRUIJN(r.output);
+            church(r.output, bound_variables);
+            stack_free(bound_variables);
+            memset(free_variables_in_scope, 0, sizeof free_variables_in_scope);
 
+            PRINT_CHURCH(r.output);
             pcq_ast_delete(r.output);
         } else {
             pcq_err_print(r.error);
@@ -102,7 +103,7 @@ de_bruijn (pcq_ast_t * church, struct stack * bound) {
     for ( signed i = 0; i < church->children_num; ++i ) {
         pcq_ast_t * child = church->children[i];
 
-        if ( strstr(child->tag, "dot") ) {
+        if ( !strncmp(child->tag, "dot", 3) || !strncmp(child->tag, "lambda", 6) ) {
             continue;
         }
 
@@ -147,6 +148,56 @@ de_bruijn (pcq_ast_t * church, struct stack * bound) {
 
     if ( added_binder ) {
         free(stack_pop(&bound));
+    }
+}
+
+void
+church (pcq_ast_t * de_bruijn, struct stack * bound) {
+
+    for ( signed i = 0; i < de_bruijn->children_num; ++i ) {
+        pcq_ast_t * child = de_bruijn->children[i];
+
+        if ( !strncmp(child->tag, "dot", 3) ) {
+            continue;
+        }
+
+        if ( !strncmp(child->tag, "lambda", 6) ) {
+            STACK_PUSH(bound, bound ? bound->value + 1 : 'a');
+            continue;
+        }
+
+        if ( child->children_num > 0 ) {
+            church(child, bound);
+            continue;
+        }
+
+        if ( !bound ) {
+            continue;
+        }
+
+        if ( !strncmp(child->tag, "id", 2) ) {
+            char * n = realloc(child->contents, 2);
+            child->contents = n;
+            snprintf(child->contents, 2, "%1c", bound->value);
+            continue;
+        }
+
+        if ( !strncmp(child->tag, "atom", 4) ) {
+            signed long idx = 0;
+            sscanf(child->contents, "%ld", &idx);
+            char binder = stack_peak(bound, idx);
+            if ( !binder ) {
+                signed height = stack_size(bound);
+                binder = bound->value + 1 + (signed )(idx - height);
+            }
+
+            char * n = realloc(child->contents, 2);
+            child->contents = n;
+            snprintf(child->contents, 2, "%1c", binder);
+            continue;
+        }
+
+        church(child, bound);
     }
 }
 

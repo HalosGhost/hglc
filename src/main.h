@@ -67,6 +67,9 @@ print_ast_contents (pcq_ast_t *, enum Notation);
 } while ( false )
 
 void
+church (pcq_ast_t *, struct stack *);
+
+void
 ast_remove_child (pcq_ast_t *, signed);
 
 #endif
