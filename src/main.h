@@ -21,7 +21,7 @@
     X(DE_BRUIJN_Application, "app", "<atom> <appL>") \
     X(DE_BRUIJN_Term, "term", "<app> | <abs>") \
     X(DE_BRUIJN_ApplicationL, "appL", "<atom> <appL> | <empty>") \
-    X(DE_BRUIJN_Program, "program", "/^/ <abs> /$/")
+    X(DE_BRUIJN_Program, "program", "/^/ <term> /$/")
 
 #define CHURCH_NOTATION \
     X(CHURCH_Lambda, "lambda", "'\\\\' | \"λ\"") \
@@ -33,7 +33,7 @@
     X(CHURCH_Application, "app", "<atom> <appL>") \
     X(CHURCH_Term, "term", "<app> | <abs>") \
     X(CHURCH_ApplicationL, "appL", "<atom> <appL> | <empty>") \
-    X(CHURCH_Program, "program", "/^/ <abs> /$/")
+    X(CHURCH_Program, "program", "/^/ <term> /$/")
 
 #define X(id, name, def) + 1
 static const int PARSER_COUNT =
